@@ -1,0 +1,76 @@
+CREATE TABLE alumno (
+    id_alumno SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido_pat VARCHAR(100) NOT NULL,
+    apellido_mat VARCHAR(100),
+    ci VARCHAR(20) UNIQUE NOT NULL,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    fecha_nacimiento DATE,
+    carrera VARCHAR(100)
+);
+
+CREATE TABLE docente (
+    id_docente SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido_pat VARCHAR(100) NOT NULL,
+    apellido_mat VARCHAR(100),
+    ci VARCHAR(20) UNIQUE NOT NULL,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    especialidad VARCHAR(100)
+);
+
+CREATE TABLE curso (
+    id_curso SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    creditos INT NOT NULL
+);
+
+CREATE TABLE clase (
+    id_clase SERIAL PRIMARY KEY,
+    id_curso INT NOT NULL REFERENCES curso(id_curso) ON DELETE CASCADE,
+    id_docente INT NOT NULL REFERENCES docente(id_docente) ON DELETE CASCADE,
+    periodo VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE inscripcion (
+    id_inscripcion SERIAL PRIMARY KEY,
+    id_alumno INT NOT NULL REFERENCES alumno(id_alumno) ON DELETE CASCADE,
+    id_clase INT NOT NULL REFERENCES clase(id_clase) ON DELETE CASCADE,
+    fecha_inscripcion DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE notas (
+    id_nota SERIAL PRIMARY KEY,
+    id_inscripcion INT NOT NULL REFERENCES inscripcion(id_inscripcion) ON DELETE CASCADE,
+    nota DECIMAL(5,2) CHECK (nota >= 0 AND nota <= 100),
+    fecha_registro DATE DEFAULT CURRENT_DATE,
+    id_docente INT NOT NULL REFERENCES docente(id_docente) ON DELETE CASCADE
+);
+
+CREATE TABLE tipo_usuario (
+    id_tipo SERIAL PRIMARY KEY,
+    nombre_tipo VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE administrador (
+    id_admin SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    id_tipo INT NOT NULL REFERENCES tipo_usuario(id_tipo) ON DELETE CASCADE
+);
+
+INSERT INTO tipo_usuario (nombre_tipo) VALUES
+('Alumno'),
+('Docente'),
+('Administrador');
+
+select * from alumno;
+select * from docente;
+select * from curso;
+select * from clase;
+select * from inscripcion;
+select * from notas;
+select * from tipo_usuario;
+select * from administrador;
+select * from administrador
