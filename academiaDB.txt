@@ -1,76 +1,123 @@
+CREATE TABLE carrera (
+    id_carrera INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre_carrera VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE especialidad (
+    id_especialidad INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre_especialidad VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE tipo_usuario (
+    id_tipo INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre_tipo VARCHAR(50) UNIQUE NOT NULL
+);
+
 CREATE TABLE alumno (
-    id_alumno SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    apellido_pat VARCHAR(100) NOT NULL,
-    apellido_mat VARCHAR(100),
-    ci VARCHAR(20) UNIQUE NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
+    id_alumno INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido_pat VARCHAR(50) NOT NULL,
+    apellido_mat VARCHAR(50),
+    ci INT UNIQUE NOT NULL,
+    correo VARCHAR(50) UNIQUE NOT NULL,
     fecha_nacimiento DATE,
-    carrera VARCHAR(100)
+    carrera_alumno INT NOT NULL REFERENCES carrera(id_carrera) ON DELETE CASCADE
 );
 
 CREATE TABLE docente (
-    id_docente SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    apellido_pat VARCHAR(100) NOT NULL,
-    apellido_mat VARCHAR(100),
-    ci VARCHAR(20) UNIQUE NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
-    especialidad VARCHAR(100)
+    id_docente INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido_pat VARCHAR(50) NOT NULL,
+    apellido_mat VARCHAR(50),
+    ci INT UNIQUE NOT NULL,
+    fecha_nacimiento DATE,
+    correo VARCHAR(50) UNIQUE NOT NULL,
+    especialidad_docente INT NOT NULL REFERENCES especialidad(id_especialidad) ON DELETE CASCADE
 );
 
-CREATE TABLE curso (
-    id_curso SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    creditos INT NOT NULL
+CREATE TABLE materia (
+    id_materia INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    descripcion TEXT
 );
 
 CREATE TABLE clase (
-    id_clase SERIAL PRIMARY KEY,
-    id_curso INT NOT NULL REFERENCES curso(id_curso) ON DELETE CASCADE,
+    id_clase INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_materia INT NOT NULL REFERENCES materia(id_materia) ON DELETE CASCADE,
     id_docente INT NOT NULL REFERENCES docente(id_docente) ON DELETE CASCADE,
     periodo VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE inscripcion (
-    id_inscripcion SERIAL PRIMARY KEY,
+    id_inscripcion INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_alumno INT NOT NULL REFERENCES alumno(id_alumno) ON DELETE CASCADE,
     id_clase INT NOT NULL REFERENCES clase(id_clase) ON DELETE CASCADE,
     fecha_inscripcion DATE DEFAULT CURRENT_DATE
 );
 
 CREATE TABLE notas (
-    id_nota SERIAL PRIMARY KEY,
+    id_nota INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_inscripcion INT NOT NULL REFERENCES inscripcion(id_inscripcion) ON DELETE CASCADE,
     nota DECIMAL(5,2) CHECK (nota >= 0 AND nota <= 100),
     fecha_registro DATE DEFAULT CURRENT_DATE,
     id_docente INT NOT NULL REFERENCES docente(id_docente) ON DELETE CASCADE
 );
 
-CREATE TABLE tipo_usuario (
-    id_tipo SERIAL PRIMARY KEY,
-    nombre_tipo VARCHAR(50) UNIQUE NOT NULL
+CREATE TABLE administrador (
+    id_admin INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido_pat VARCHAR(50) NOT NULL,
+    apellido_mat VARCHAR(50),
+    ci INT UNIQUE NOT NULL,
+    fecha_nacimiento DATE,
+    correo VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE administrador (
-    id_admin SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
+CREATE TABLE usuario (
+    id_usuario INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    contraseña VARCHAR(50) NOT NULL,
     id_tipo INT NOT NULL REFERENCES tipo_usuario(id_tipo) ON DELETE CASCADE
 );
+
+INSERT INTO carrera (nombre_carrera) VALUES
+('Ing. Sistemas'),
+('Ing. Comercial'),
+('Derecho');
+
+INSERT INTO especialidad (nombre_especialidad) VALUES
+('Matematicas'),
+('Electronica'),
+('Leyes');
 
 INSERT INTO tipo_usuario (nombre_tipo) VALUES
 ('Alumno'),
 ('Docente'),
 ('Administrador');
 
-select * from alumno;
-select * from docente;
-select * from curso;
-select * from clase;
-select * from inscripcion;
-select * from notas;
-select * from tipo_usuario;
-select * from administrador;
-select * from administrador
+INSERT INTO alumno (nombre, apellido_pat, apellido_mat, ci, correo, fecha_nacimiento, carrera_alumno) VALUES
+('Alan', 'Laura', 'Paz', 13376354, 'lauraalan@gmail.com', '2000-07-15', 1);
+
+INSERT INTO docente (nombre, apellido_pat, apellido_mat, ci, fecha_nacimiento, correo, especialidad_docente) VALUES
+('Marco', 'Torrez', 'Apaza', 4851352, '1993-12-20', 'torrezmarco@gmail.com', 2);
+
+INSERT INTO administrador (nombre, apellido_pat, apellido_mat, ci, fecha_nacimiento, correo) VALUES
+('Elias', 'Luna', 'Soto', 13348245, '2000-06-21', 'julioalias@gmail.com');
+
+INSERT INTO usuario (nombre, contraseña, id_tipo) VALUES
+('AlanLaura', '7294', 1),
+('JorgeMamani', '3816', 1),
+('DiegoQuito', '4862', 2),
+('EliasLuna', '1234', 3);
+
+SELECT * FROM alumno;
+SELECT * FROM docente;
+SELECT * FROM materia;
+SELECT * FROM clase;
+SELECT * FROM inscripcion;
+SELECT * FROM notas;
+SELECT * FROM tipo_usuario;
+SELECT * FROM administrador;
+SELECT * FROM usuario;
+SELECT * FROM carrera;
+SELECT * FROM especialidad;
