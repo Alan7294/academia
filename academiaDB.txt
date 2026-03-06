@@ -13,26 +13,26 @@ CREATE TABLE tipo_usuario (
     nombre_tipo VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE alumno (
-    id_alumno INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+CREATE TABLE persona (
+    id_persona INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     apellido_pat VARCHAR(50) NOT NULL,
     apellido_mat VARCHAR(50),
     ci INT UNIQUE NOT NULL,
     correo VARCHAR(50) UNIQUE NOT NULL,
-    fecha_nacimiento DATE,
+    fecha_nacimiento DATE
+);
+
+CREATE TABLE alumno (
+    id_alumno INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_persona INT NOT NULL REFERENCES persona(id_persona) ON DELETE CASCADE,
     carrera_alumno INT NOT NULL REFERENCES carrera(id_carrera) ON DELETE CASCADE
 );
 
 CREATE TABLE docente (
     id_docente INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    apellido_pat VARCHAR(50) NOT NULL,
-    apellido_mat VARCHAR(50),
-    ci INT UNIQUE NOT NULL,
-    fecha_nacimiento DATE,
-    correo VARCHAR(50) UNIQUE NOT NULL,
-    especialidad_docente INT NOT NULL REFERENCES especialidad(id_especialidad) ON DELETE CASCADE
+    id_persona INT NOT NULL REFERENCES persona(id_persona) ON DELETE CASCADE,
+    id_especialidad INT NOT NULL REFERENCES especialidad(id_especialidad) ON DELETE CASCADE
 );
 
 CREATE TABLE materia (
@@ -65,16 +65,12 @@ CREATE TABLE notas (
 
 CREATE TABLE administrador (
     id_admin INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    apellido_pat VARCHAR(50) NOT NULL,
-    apellido_mat VARCHAR(50),
-    ci INT UNIQUE NOT NULL,
-    fecha_nacimiento DATE,
-    correo VARCHAR(50) UNIQUE NOT NULL
+    id_persona INT NOT NULL REFERENCES persona(id_persona) ON DELETE CASCADE
 );
 
 CREATE TABLE usuario (
     id_usuario INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_persona INT NOT NULL REFERENCES persona(id_persona) ON DELETE CASCADE,
     nombre VARCHAR(50) NOT NULL,
     contraseña VARCHAR(50) NOT NULL,
     id_tipo INT NOT NULL REFERENCES tipo_usuario(id_tipo) ON DELETE CASCADE
@@ -83,32 +79,94 @@ CREATE TABLE usuario (
 INSERT INTO carrera (nombre_carrera) VALUES
 ('Ing. Sistemas'),
 ('Ing. Comercial'),
-('Derecho');
+('Derecho'),
+('Arquitectura'),
+('Medicina');
 
 INSERT INTO especialidad (nombre_especialidad) VALUES
 ('Matematicas'),
 ('Electronica'),
-('Leyes');
+('Leyes'),
+('Arquitectura'),
+('Biologia');
 
 INSERT INTO tipo_usuario (nombre_tipo) VALUES
 ('Alumno'),
 ('Docente'),
 ('Administrador');
 
-INSERT INTO alumno (nombre, apellido_pat, apellido_mat, ci, correo, fecha_nacimiento, carrera_alumno) VALUES
-('Alan', 'Laura', 'Paz', 13376354, 'lauraalan@gmail.com', '2000-07-15', 1);
+INSERT INTO persona (nombre, apellido_pat, apellido_mat, ci, correo, fecha_nacimiento) VALUES
+('Alan', 'Laura', 'Paz', 13376354, 'lauraalan@gmail.com', '2000-07-15'),
+('Jorge', 'Mamani', 'Quispe', 12345678, 'jorge.mamani@gmail.com', '1999-05-20'),
+('Diego', 'Quito', 'Flores', 87654321, 'diego.qflores@gmail.com', '2001-03-10'),
+('Maria', 'Soto', 'Perez', 11223344, 'maria.soto@gmail.com', '2002-11-25'),
+('Lucia', 'Fernandez', 'Rojas', 55997788, 'lucia.fernandez@gmail.com', '2000-09-12'),
+('Marco', 'Torrez', 'Apaza', 4851352, 'torrezmarco@gmail.com', '1993-12-20'),
+('Luis', 'Perez', 'Gomez', 22334455, 'luis.perez@gmail.com', '1985-07-14'),
+('Ana', 'Rojas', 'Lopez', 33445566, 'ana.rojas@gmail.com', '1990-02-28'),
+('Carlos', 'Fernandez', 'Diaz', 44556677, 'carlos.fernandez@gmail.com', '1982-09-05'),
+('Sofia', 'Martinez', 'Vargas', 55667788, 'sofia.martinez@gmail.com', '1988-01-17'),
+('Elias', 'Luna', 'Soto', 13348245, 'julioalias@gmail.com', '2000-06-21'),
+('Pedro', 'Ramirez', 'Lopez', 22334466, 'pedro.ramirez@gmail.com', '1995-04-12'),
+('Laura', 'Gonzalez', 'Perez', 33445577, 'laura.gonzalez@gmail.com', '1992-08-30'),
+('Miguel', 'Torres', 'Diaz', 44556688, 'miguel.torres@gmail.com', '1987-01-19'),
+('Andrea', 'Vargas', 'Flores', 55887799, 'andrea.vargas@gmail.com', '1998-11-05');
 
-INSERT INTO docente (nombre, apellido_pat, apellido_mat, ci, fecha_nacimiento, correo, especialidad_docente) VALUES
-('Marco', 'Torrez', 'Apaza', 4851352, '1993-12-20', 'torrezmarco@gmail.com', 2);
+INSERT INTO alumno (id_persona, carrera_alumno) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
 
-INSERT INTO administrador (nombre, apellido_pat, apellido_mat, ci, fecha_nacimiento, correo) VALUES
-('Elias', 'Luna', 'Soto', 13348245, '2000-06-21', 'julioalias@gmail.com');
+INSERT INTO docente (id_persona, id_especialidad) VALUES
+(6, 1),
+(7, 2),
+(8, 3),
+(9, 4),
+(10, 5);
 
-INSERT INTO usuario (nombre, contraseña, id_tipo) VALUES
-('AlanLaura', '7294', 1),
-('JorgeMamani', '3816', 1),
-('DiegoQuito', '4862', 2),
-('EliasLuna', '1234', 3);
+INSERT INTO materia (nombre, descripcion) VALUES
+('Matemáticas I', 'Curso básico de álgebra y cálculo'),
+('Programación I', 'Introducción a la programación en C'),
+('Derecho Civil', 'Fundamentos del derecho civil'),
+('Arquitectura Moderna', 'Diseño arquitectónico contemporáneo'),
+('Biología General', 'Principios básicos de biología');
+
+INSERT INTO clase (id_materia, id_docente, periodo) VALUES
+(1, 2, '2026-1'),
+(2, 1, '2026-1'),
+(3, 3, '2026-1'),
+(4, 4, '2026-1'),
+(5, 5, '2026-1');
+
+INSERT INTO inscripcion (id_alumno, id_clase) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
+INSERT INTO notas (id_inscripcion, nota, id_docente) VALUES
+(1, 85.50, 2),
+(2, 90.00, 1),
+(3, 70.25, 3),
+(4, 88.75, 4),
+(5, 95.00, 5);
+
+INSERT INTO administrador (id_persona) VALUES
+(11),
+(12),
+(13),
+(14),
+(15);
+
+INSERT INTO usuario (id_persona, nombre, contraseña, id_tipo) VALUES
+(1, 'AlanLaura', '7294', 1),
+(2, 'JorgeMamani', '3816', 1),
+(3, 'DiegoQuito', '4862', 2),
+(11, 'EliasLuna', '1234', 3),
+(4, 'MariaSoto', '5678', 1);
 
 SELECT * FROM alumno;
 SELECT * FROM docente;
